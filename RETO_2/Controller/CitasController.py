@@ -1,4 +1,4 @@
-from Model.CitasModelo import CitasModelo
+from Model.ClasesAbstractas.CitasAbs import CitasAbs
 from Model.ClienteModelo import ClienteModelo
 from utils.Validaciones import validar_fecha,validar_hora
 from datetime import datetime
@@ -7,6 +7,7 @@ class CitasController:
     
     def __init__(self):
         self.cliente_modelo = ClienteModelo("","","")
+        self.citas_modelo = CitasAbs("","","","")
     
     def programar_cita(self):
         print("\n--Programar cita---")
@@ -33,7 +34,7 @@ class CitasController:
                          hora = input("Hora de la cita (HH:MM): ")
                  servicio=input("Servicio(consulta,vacunacion,desparacitacion,etc):")
                  veterinario=input("Ingrese nombre veterinario asignado:")
-                 cita=CitasModelo(fecha,hora,servicio,veterinario)
+                 cita=CitasAbs(fecha,hora,servicio,veterinario)
                  mascota.agregar_cita(cita)
                  print(f"Cita programada para mascota {mascota.nombre} el {fecha} a las {hora} con veterinario {veterinario}")
             else:

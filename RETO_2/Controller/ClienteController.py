@@ -35,3 +35,4 @@ class ClienteController:
         
     def obtener_clientes_controller(self):
         return ClienteModelo.obtener_clientes()
+    
