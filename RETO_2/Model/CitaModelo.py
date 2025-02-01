@@ -34,6 +34,22 @@ class CitaModelo(CitasAbs):
             nuevo_servicio = input("Nuevo servicio: ").strip()
             nuevo_veterinario = input("Nuevo veterinario: ").strip()
             
+            if nuevo_servicio == "":
+                nuevo_servicio = mascota.historial_citas[indice].servicio
+
+            if nueva_fecha == "":
+                nueva_fecha = mascota.historial_citas[indice].fecha
+
+            if nueva_hora == "":
+                nueva_hora= mascota.historial_citas[indice].hora
+
+            if nuevo_veterinario == "":
+                nuevo_veterinario = mascota.historial_citas[indice].veterinario
+
+
+
+
+
             if nueva_fecha:
                 datetime.strptime(nueva_fecha, "%Y-%m-%d")
                 cita.actualizar(fecha = nueva_fecha)
@@ -48,7 +64,4 @@ class CitaModelo(CitasAbs):
             print("¡Cita actualizada con éxito!")
         except ValueError as e:
             print(f"Error: {e}")
-    # def mostrar_info(self):
-    #     print(f"Cita:{self.fecha}{self.hora}-{self.servicio}-con {self.veterinario}")        
-
-        
+    
