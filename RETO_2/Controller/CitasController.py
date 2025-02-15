@@ -16,11 +16,11 @@ class CitasController:
             print("No hay clientes registrados. Debe registrar primero un cliente.")
             return
         nombre_cliente=input("ingrese el nombre del propietario :")
-        cliente = next((c for c in cliente if c.nombre==nombre_cliente),None)
+        cliente = next((c for c in cliente if c.nombre==nombre_cliente.lower()),None)
 
         if cliente:
             nombre_mascota=input("Ingrese el nombre de la mascota:")
-            mascota=next((m for m in cliente.mascotas if m.nombre==nombre_mascota),None)
+            mascota=next((m for m in cliente.mascotas if m.nombre==nombre_mascota.lower()),None)
 
             if mascota:
                  fecha = input("Fecha de la cita (YYYY-MM-DD): ")
@@ -63,7 +63,7 @@ class CitasController:
             
             print("Citas disponibles para actualizar:")
             for i, cita in enumerate(mascota.historial_citas):
-                print(f"{i + 1}: Fecha: {cita.fecha}. Hora: {cita.hora}. Servicio: {cita.servicio}. Veterinario: {cita.veterinario}")
+                print(f"{i + 1}: Fecha: {cita.fecha}. \nHora: {cita.hora}. \nServicio: {cita.servicio}. \nVeterinario: {cita.veterinario}")
                 
             indice = int(input("Seleccione el número de la cita a actualizar: ").strip()) -1
             if indice < 0 or indice >= len(mascota.historial_citas):
@@ -109,11 +109,14 @@ class CitasController:
                 print("\nHisotrial de citas y servicios para :", mascota.nombre)
                 print("-"*50)
                 print("Citas programadas:")
-                for cita in mascota.historial_citas:
-                    cita.mostrar_info()
+                if len(mascota.historial_citas) > 0:
+                    for cita in mascota.historial_citas:
+                        cita.mostrar_info()
+                else:
+                    print(f"No hay citas agendadas para la mascota {mascota.nombre}")
                 print("-"*50)
             else:
-                print("Mascota no encontrada") 
+                print("Mascota no encontrada")
         else:
             print("Cliente no encontrado")
             
