@@ -114,6 +114,8 @@ class SupermercadoApp:
         #lambda es una función anónima que se utiliza para llamar a una función con argumentos
 # Método principal que crea la ventana principal y la ejecuta
 root = tk.Tk()
+root.minsize(width=200,height=400)
+root.resizable(0,0)
 app = SupermercadoApp(root)
 root.mainloop()
 
