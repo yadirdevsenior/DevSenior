@@ -1,119 +1,118 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-
 class SupermercadoApp:
- 
-    # Constructor de la clase
     def __init__(self, root):
-        # Configuración de la ventana principal
         self.root = root
-        self.root.title("Sistema de Supermercado")
-        self.root.geometry("600x400")
-        # root sirve para crear la ventana principal
-        # Variables de instancia
-        self.productos = {}
-        self.historial_compras = []
-        # Creación de la interfaz gráfica (el notebook sirve para gestionar las pestañas)
+        self.root.title("Sistema de Ventas - Supermercado")
+        self.root.geometry("800x500")
+        
+        self.productos = []  # Lista de productos
+        self.carrito = []  # Carrito de compras
+        self.historial = []  # Historial de ventas
+        
         self.notebook = ttk.Notebook(root)
-        # Creación de los frames
-        self.frame_productos = ttk.Frame(self.notebook)
-        self.frame_ventas = ttk.Frame(self.notebook)
-        self.frame_historial = ttk.Frame(self.notebook)
-        # Añadir los frames al notebook
-        self.notebook.add(self.frame_productos, text="Gestión de Productos")
-        self.notebook.add(self.frame_ventas, text="Realizar Venta")
-        self.notebook.add(self.frame_historial, text="Historial de Compras")
-        self.notebook.pack(expand=True, fill='both')
-        # Creación de las vistas
+        self.notebook.pack(fill='both', expand=True)
+        
         self.crear_vista_productos()
         self.crear_vista_ventas()
         self.crear_vista_historial()
-        self.crear_botones_navegacion()
-    #
+    
     def crear_vista_productos(self):
+        frame_productos = ttk.Frame(self.notebook)
+        self.notebook.add(frame_productos, text="Agregar Productos")
         
-        ttk.Label(self.frame_productos, text="Nombre del Producto:").pack()
-        self.entry_nombre = ttk.Entry(self.frame_productos)
-        self.entry_nombre.pack()
-        # Crea una etiqueta y un campo de entrada para el precio
-        ttk.Label(self.frame_productos, text="Precio:").pack()
-        self.entry_precio = ttk.Entry(self.frame_productos)
-        self.entry_precio.pack()
+        ttk.Label(frame_productos, text="Nombre:").grid(row=0, column=0)
+        self.nombre_var = tk.StringVar()
+        ttk.Entry(frame_productos, textvariable=self.nombre_var).grid(row=0, column=1)
         
-        ttk.Label(self.frame_productos, text="Cantidad:").pack() 
-        self.entry_cantidad = ttk.Entry(self.frame_productos)
-        self.entry_cantidad.pack()
-        # Crea un botón para agregar productos
-        ttk.Button(self.frame_productos, text="Agregar Producto", command=self.agregar_producto).pack()
+        ttk.Label(frame_productos, text="Precio Venta:").grid(row=1, column=0)
+        self.precio_venta_var = tk.DoubleVar()
+        ttk.Entry(frame_productos, textvariable=self.precio_venta_var).grid(row=1, column=1)
+        
+        ttk.Label(frame_productos, text="Precio Compra:").grid(row=2, column=0)
+        self.precio_compra_var = tk.DoubleVar()
+        ttk.Entry(frame_productos, textvariable=self.precio_compra_var).grid(row=2, column=1)
+        
+        ttk.Label(frame_productos, text="Cantidad:").grid(row=3, column=0)
+        self.cantidad_var = tk.IntVar()
+        ttk.Entry(frame_productos, textvariable=self.cantidad_var).grid(row=3, column=1)
+        
+        ttk.Button(frame_productos, text="Agregar Producto", command=self.agregar_producto).grid(row=4, column=0, columnspan=2)
+        
+        self.tree_productos = ttk.Treeview(frame_productos, columns=("Nombre", "Precio Venta", "Cantidad"), show='headings')
+        self.tree_productos.heading("Nombre", text="Nombre")
+        self.tree_productos.heading("Precio Venta", text="Precio Venta")
+        self.tree_productos.heading("Cantidad", text="Cantidad")
+        self.tree_productos.grid(row=5, column=0, columnspan=2)
     
-    def agregar_producto(self): # Método para agregar productos
-        nombre = self.entry_nombre.get()
-        precio = self.entry_precio.get()
-        cantidad = self.entry_cantidad.get()
-        # Verifica que los datos ingresados sean válidos
-        if nombre and precio.isdigit() and cantidad.isdigit():
-            self.productos[nombre] = {"precio": int(precio), "cantidad": int(cantidad)}
-            messagebox.showinfo("Éxito", f"Producto {nombre} agregado correctamente")
-        else:
-            messagebox.showerror("Error", "Ingrese datos válidos")
+    def agregar_producto(self):
+        producto = {
+            "nombre": self.nombre_var.get(),
+            "precio_venta": self.precio_venta_var.get(),
+            "precio_compra": self.precio_compra_var.get(),
+            "cantidad": self.cantidad_var.get()
+        }
+        self.productos.append(producto)
+        self.tree_productos.insert("", "end", values=(producto["nombre"], producto["precio_venta"], producto["cantidad"]))
+        messagebox.showinfo("Éxito", "Producto agregado correctamente")
     
-    def crear_vista_ventas(self):# Método para crear la vista de ventas
-        ttk.Label(self.frame_ventas, text="Seleccione Producto:").pack() 
-
-        self.producto_seleccionado = ttk.Combobox(self.frame_ventas, values=list(self.productos.keys()))
-        self.producto_seleccionado.pack()
+    def crear_vista_ventas(self):
+        frame_ventas = ttk.Frame(self.notebook)
+        self.notebook.add(frame_ventas, text="Realizar Venta")
         
-        ttk.Label(self.frame_ventas, text="Cantidad:").pack()
-        self.entry_cantidad_venta = ttk.Entry(self.frame_ventas)
-        self.entry_cantidad_venta.pack()
-        # Crea un botón para realizar la venta
-        ttk.Button(self.frame_ventas, text="Realizar Venta", command=self.realizar_venta).pack()
+        ttk.Label(frame_ventas, text="Buscar Producto:").grid(row=0, column=0)
+        self.buscar_var = tk.StringVar()
+        ttk.Entry(frame_ventas, textvariable=self.buscar_var).grid(row=0, column=1)
         
-        self.texto_factura = tk.Text(self.frame_ventas, height=10)
-        self.texto_factura.pack()
+        ttk.Label(frame_ventas, text="Cantidad a vender:").grid(row=1, column=0)
+        self.cantidad_vender_var = tk.IntVar()
+        ttk.Entry(frame_ventas, textvariable=self.cantidad_vender_var).grid(row=1, column=1)
+        
+        ttk.Button(frame_ventas, text="Agregar al Carrito", command=self.agregar_al_carrito).grid(row=2, column=0, columnspan=2)
+        ttk.Button(frame_ventas, text="Vender", command=self.realizar_venta).grid(row=3, column=0, columnspan=2)
+        
+        self.tree_carrito = ttk.Treeview(frame_ventas, columns=("Nombre", "Cantidad", "Subtotal"), show='headings')
+        self.tree_carrito.heading("Nombre", text="Nombre")
+        self.tree_carrito.heading("Cantidad", text="Cantidad")
+        self.tree_carrito.heading("Subtotal", text="Subtotal")
+        self.tree_carrito.grid(row=4, column=0, columnspan=2)
     
-    def realizar_venta(self): # Método para realizar la venta
-        producto = self.producto_seleccionado.get()
-        cantidad = self.entry_cantidad_venta.get()
-        
-        if producto in self.productos and cantidad.isdigit():
-            cantidad = int(cantidad)
-            if self.productos[producto]["cantidad"] >= cantidad:
-                total = cantidad * self.productos[producto]["precio"]
-                self.historial_compras.append(f"{producto} x{cantidad} = ${total}")
-                self.productos[producto]["cantidad"] -= cantidad
-                
-                factura = f"\nFactura:\n{producto} x{cantidad} = ${total}\nTotal: ${total}\n"
-                self.texto_factura.delete("1.0", tk.END)
-                self.texto_factura.insert(tk.END, factura)
-                
-                messagebox.showinfo("Factura", factura)
-            else:
-                messagebox.showerror("Error", "Stock insuficiente")
-        else:
-            messagebox.showerror("Error", "Datos inválidos")
-    # Método para crear la vista de historial
+    def agregar_al_carrito(self):
+        for producto in self.productos:
+            if producto['nombre'].lower() == self.buscar_var.get().lower():
+                cantidad = self.cantidad_vender_var.get()
+                if cantidad <= producto['cantidad']:
+                    subtotal = cantidad * producto['precio_venta']
+                    self.carrito.append({"nombre": producto['nombre'], "cantidad": cantidad, "subtotal": subtotal})
+                    self.tree_carrito.insert("", "end", values=(producto['nombre'], cantidad, subtotal))
+                    producto['cantidad'] -= cantidad
+                    return
+        messagebox.showerror("Error", "Producto no encontrado o cantidad insuficiente")
+    
+    def realizar_venta(self):
+        total_venta = sum(item['subtotal'] for item in self.carrito)
+        self.historial.append({"items": self.carrito, "total": total_venta})
+        self.carrito = []
+        self.tree_carrito.delete(*self.tree_carrito.get_children())
+        messagebox.showinfo("Venta Realizada", f"Total Venta: {total_venta}")
+    
     def crear_vista_historial(self):
-        ttk.Button(self.frame_historial, text="Actualizar Historial", command=self.mostrar_historial).pack()
-        self.texto_historial = tk.Text(self.frame_historial, height=10)
-        self.texto_historial.pack()
+        frame_historial = ttk.Frame(self.notebook)
+        self.notebook.add(frame_historial, text="Historial de Compras")
+        
+        self.tree_historial = ttk.Treeview(frame_historial, columns=("Total",), show='headings')
+        self.tree_historial.heading("Total", text="Total de la Venta")
+        self.tree_historial.pack()
+        
+        ttk.Button(frame_historial, text="Actualizar Historial", command=self.actualizar_historial).pack()
     
-    def mostrar_historial(self):
-        self.texto_historial.delete("1.0", tk.END)
-        for compra in self.historial_compras:
-            self.texto_historial.insert(tk.END, compra + "\n")
-    
-    def crear_botones_navegacion(self):
-        frame_botones = ttk.Frame(self.root)
-        frame_botones.pack(side=tk.BOTTOM, fill=tk.X)
-        # Crea botones para navegar entre las pestañas
-        ttk.Button(frame_botones, text="Gestión de Productos",  command=lambda : self.notebook.select(self.frame_productos)).pack(side=tk.LEFT, expand=True)
-        ttk.Button(frame_botones, text="Realizar Venta", command=lambda: self.notebook.select(self.frame_ventas)).pack(side=tk.LEFT, expand=True)
-        ttk.Button(frame_botones, text="Historial de Compras", command=lambda: self.notebook.select(self.frame_historial)).pack(side=tk.LEFT, expand=True)
-        #lambda es una función anónima que se utiliza para llamar a una función con argumentos
-# Método principal que crea la ventana principal y la ejecuta
-root = tk.Tk()
-app = SupermercadoApp(root)
-root.mainloop()
+    def actualizar_historial(self):
+        self.tree_historial.delete(*self.tree_historial.get_children())
+        for venta in self.historial:
+            self.tree_historial.insert("", "end", values=(venta['total'],))
 
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = SupermercadoApp(root)
+    root.mainloop()
