@@ -98,21 +98,27 @@ class SupermercadoApp:
         messagebox.showinfo("Venta Realizada", f"Total Venta: {total_venta}")
     
     def crear_vista_historial(self):
-        frame_historial = ttk.Frame(self.notebook)
-        self.notebook.add(frame_historial, text="Historial de Compras")
-        
-        self.tree_historial = ttk.Treeview(frame_historial, columns=("Total",), show='headings')
-        self.tree_historial.heading("Total", text="Total de la Venta")
-        self.tree_historial.pack()
-        
-        ttk.Button(frame_historial, text="Actualizar Historial", command=self.actualizar_historial).pack()
+        ttk.Button(self.frame_historial, text="Actualizar Historial", command=self.mostrar_historial).pack()
+        self.texto_historial = tk.Text(self.frame_historial, height=10)
+        self.texto_historial.pack()
     
-    def actualizar_historial(self):
-        self.tree_historial.delete(*self.tree_historial.get_children())
-        for venta in self.historial:
-            self.tree_historial.insert("", "end", values=(venta['total'],))
+    def mostrar_historial(self):
+        self.texto_historial.delete("1.0", tk.END)
+        for compra in self.historial_compras:
+            self.texto_historial.insert(tk.END, compra + "\n")
+    
+    def crear_botones_navegacion(self):
+        frame_botones = ttk.Frame(self.root)
+        frame_botones.pack(side=tk.BOTTOM, fill=tk.X)
+        # Crea botones para navegar entre las pestañas
+        ttk.Button(frame_botones, text="Gestión de Productos",  command=lambda : self.notebook.select(self.frame_productos)).pack(side=tk.LEFT, expand=True)
+        ttk.Button(frame_botones, text="Realizar Venta", command=lambda: self.notebook.select(self.frame_ventas)).pack(side=tk.LEFT, expand=True)
+        ttk.Button(frame_botones, text="Historial de Compras", command=lambda: self.notebook.select(self.frame_historial)).pack(side=tk.LEFT, expand=True)
+        #lambda es una función anónima que se utiliza para llamar a una función con argumentos
+# Método principal que crea la ventana principal y la ejecuta
+root = tk.Tk()
+root.minsize(width=200,height=400)
+root.resizable(0,0)
+app = SupermercadoApp(root)
+root.mainloop()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = SupermercadoApp(root)
-    root.mainloop()
