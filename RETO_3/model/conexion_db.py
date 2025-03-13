@@ -4,9 +4,9 @@ import os
 
 class ConexionDB:
     def __init__(self):
-        self.base_datos = os.path.abspath('RETO_3/database/supermercado.db')
-        if os.path.isfile(self.base_datos):
-            self.base_datos = os.path.abspath('database/supermercado.db')
+        self.base_datos = os.path.abspath('DevSenior/RETO_3/database/supermercado.db')
+       # if os.path.isfile(self.base_datos):
+        self.base_datos = os.path.abspath('DevSenior/RETO_3/database/supermercado.db')
             
         self.conexion = sqlite3.connect(self.base_datos)
         self.cursor = self.conexion.cursor()
