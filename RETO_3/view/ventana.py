@@ -39,13 +39,17 @@ class SupermercadoApp:
         ttk.Entry(frame_productos, textvariable=self.cantidad_var).grid(row=3, column=1)
         
         ttk.Button(frame_productos, text="Agregar Producto", command=self.agregar_producto).grid(row=4, column=0, columnspan=2)
+        ttk.Button(frame_productos, text="Eliminar Producto", command=self.eliminar_producto).grid(row=4, column=1, columnspan=2)
         
         self.tree_productos = ttk.Treeview(frame_productos, columns=("Nombre", "Precio Venta", "Cantidad"), show='headings')
         self.tree_productos.heading("Nombre", text="Nombre")
         self.tree_productos.heading("Precio Venta", text="Precio Venta")
         self.tree_productos.heading("Cantidad", text="Cantidad")
         self.tree_productos.grid(row=5, column=0, columnspan=2)
-    
+        productos = ProductosController()
+        obtener_productos = productos.obtener()
+        for item in obtener_productos:
+              self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
     def agregar_producto(self):
         producto = {
             "nombreProducto": self.nombre_var.get(),
@@ -57,9 +61,24 @@ class SupermercadoApp:
         result=ProductosController.insertar(producto)
         self.productos.append(producto)
         for item in result:
-            # self.tree_productos.insert("", "end", values=(producto["nombreProducto"], producto["precioVenta"], producto["precioCompra"], producto["cantidad"]))
               self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
         messagebox.showinfo("Éxito", "Producto agregado correctamente")
+
+    def eliminar_producto(self):
+        producto = {
+            "nombreProducto": self.nombre_var.get(),
+        }
+        productos = ProductosController()
+        selected_item = self.tree_productos.selection()
+        id_producto = self.tree_productos.item(selected_item[0])['values']
+        productos.eliminar(id_producto)
+        productos =productos.obtener()
+        self.productos.append(producto)
+        
+        for item in productos:
+              self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
+        
+        messagebox.showinfo("Éxito", "Producto eliminado correctamente")
     
     def crear_vista_ventas(self):
         frame_ventas = ttk.Frame(self.notebook)

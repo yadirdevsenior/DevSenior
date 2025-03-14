@@ -4,8 +4,9 @@ class ProductoModel:
     def __init__(self, nombreProducto, precioCompra, precioVenta, cantidad):
       self.nombreProducto = nombreProducto
       self.precioCompra = precioCompra
-      self.precioVenta = precioVenta
+      self.precioVenta = precioVenta 
       self.cantidad = cantidad
+    
       
     
     def crear_tabla(self):
@@ -42,6 +43,29 @@ class ProductoModel:
         result = response.fetchall()
         conexion.cerrar_conexion()
         return result
-     
-     # Hacer funcion consultar producto
-     
+    
+    
+    def obtener_productos(self):
+        conexion = ConexionDB()
+
+        
+        sql2 = '''SELECT Idproducto,
+                         NombreProducto,
+                         CantidadProducto,
+                         PrecioVenta,
+                         PrecioCompra 
+                  FROM Productos'''
+        
+        response = conexion.cursor.execute(sql2)
+        result = response.fetchall()
+        conexion.cerrar_conexion()
+        return result
+    
+    def delete_producto(self, id_producto):
+        conexion = ConexionDB()
+        sql2 = '''DELETE FROM Productos WHERE IdProducto = ?'''
+        conexion.cursor.execute(sql2, (id_producto,))
+        conexion.conexion.commit()
+        conexion.cerrar_conexion()
+        
+    
