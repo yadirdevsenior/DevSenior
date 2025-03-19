@@ -38,7 +38,12 @@ class ProductoModel:
                 VALUES(?,?,?,?)
             '''
         conexion.cursor.execute(sql, (self.nombreProducto, self.cantidad, self.precioVenta, self.precioCompra))
-        sql2 = '''SELECT * FROM Productos'''
+        sql2 = '''SELECT Idproducto,
+                         NombreProducto,
+                         CantidadProducto,
+                         PrecioVenta,
+                         PrecioCompra 
+                  FROM Productos'''
         response = conexion.cursor.execute(sql2)
         result = response.fetchall()
         conexion.cerrar_conexion()
@@ -47,8 +52,7 @@ class ProductoModel:
     
     def obtener_productos(self):
         conexion = ConexionDB()
-
-        
+       
         sql2 = '''SELECT Idproducto,
                          NombreProducto,
                          CantidadProducto,

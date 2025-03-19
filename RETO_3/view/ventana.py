@@ -17,31 +17,59 @@ class SupermercadoApp:
         self.crear_vista_productos()
         self.crear_vista_ventas()
         self.crear_vista_historial()
+        self.productos_controller = ProductosController()
     
     def crear_vista_productos(self):
         frame_productos = ttk.Frame(self.notebook)
         self.notebook.add(frame_productos, text="Agregar Productos")
         
-        ttk.Label(frame_productos, text="Nombre:").grid(row=0, column=0)
+        label_nombre = ttk.Label(frame_productos, text="Nombre:")
+        label_nombre.config(font=('Arial Narrow',12,'bold'))
+        label_nombre.grid(row=0, column=0, padx=10, pady=10)
+        
         self.nombre_var = tk.StringVar()
-        ttk.Entry(frame_productos, textvariable=self.nombre_var).grid(row=0, column=1)
+        entry_nombre = ttk.Entry(frame_productos, textvariable=self.nombre_var)
+        entry_nombre.config(width=55, font=('Arial Narrow',12))
+        entry_nombre.grid(row=0, column=1, padx=10, pady=10)
         
-        ttk.Label(frame_productos, text="Precio Venta:").grid(row=1, column=0)
+        label_precio_venta = ttk.Label(frame_productos, text="Precio Venta:")
+        label_precio_venta.config(font=('Arial Narrow',12,'bold'))
+        label_precio_venta.grid(row=1, column=0, padx=10, pady=10)
+        
         self.precio_venta_var = tk.DoubleVar()
-        ttk.Entry(frame_productos, textvariable=self.precio_venta_var).grid(row=1, column=1)
+        entry_precio_venta = ttk.Entry(frame_productos, textvariable=self.precio_venta_var)
+        entry_precio_venta.config(width=55, font=('Arial Narrow',12))
+        entry_precio_venta.grid(row=1, column=1, padx=10, pady=10)
         
-        ttk.Label(frame_productos, text="Precio Compra:").grid(row=2, column=0)
+        label_precio_compra = ttk.Label(frame_productos, text="Precio Compra:")
+        label_precio_compra.config(font=('Arial Narrow',12,'bold'))
+        label_precio_compra.grid(row=2, column=0, padx=10, pady=10)
+        
         self.precio_compra_var = tk.DoubleVar()
-        ttk.Entry(frame_productos, textvariable=self.precio_compra_var).grid(row=2, column=1)
+        entry_precio_compra = ttk.Entry(frame_productos, textvariable=self.precio_compra_var)
+        entry_precio_compra.config(width=55, font=('Arial Narrow',12))
+        entry_precio_compra.grid(row=2, column=1, padx=10, pady=10)
         
-        ttk.Label(frame_productos, text="Cantidad:").grid(row=3, column=0)
+        label_cantidad = ttk.Label(frame_productos, text="Cantidad:")
+        label_cantidad.config(font=('Arial Narrow',11,'bold'))
+        label_cantidad.grid(row=3, column=0, padx=10, pady=10)
+        
         self.cantidad_var = tk.IntVar()
-        ttk.Entry(frame_productos, textvariable=self.cantidad_var).grid(row=3, column=1)
+        entry_cantidad = ttk.Entry(frame_productos, textvariable=self.cantidad_var)
+        entry_cantidad.config(width=55, font=('Arial Narrow',12))
+        entry_cantidad.grid(row=3, column=1, padx=10, pady=10)
         
-        ttk.Button(frame_productos, text="Agregar Producto", command=self.agregar_producto).grid(row=4, column=0, columnspan=2)
-        ttk.Button(frame_productos, text="Eliminar Producto", command=self.eliminar_producto).grid(row=4, column=1, columnspan=2)
+        style = ttk.Style()
+        style.configure("Eliminar.TButton", foreground="#900C3F", font=("Arial", 12, "bold"))
+        self.boton_agregar = ttk.Button(frame_productos, text="Agregar Producto", command=self.agregar_producto, style="Eliminar.TButton")
+        self.boton_agregar.grid(row=4, column=0, padx=10, pady=10)
+        self.boton_agregar.config(cursor='hand2')
+        self.boton_eliminar = ttk.Button(frame_productos, text="Eliminar Producto", command=self.eliminar_producto, style="Eliminar.TButton")
+        self.boton_eliminar.grid(row=4, column=1, padx=10, pady=10)
+        self.boton_eliminar.config(cursor='hand2')
         
-        self.tree_productos = ttk.Treeview(frame_productos, columns=("Nombre", "Precio Venta", "Cantidad"), show='headings')
+        self.tree_productos = ttk.Treeview(frame_productos, columns=("Id Producto","Nombre", "Precio Venta", "Cantidad"), show='headings')
+        self.tree_productos.heading("Id Producto", text="Id Producto")
         self.tree_productos.heading("Nombre", text="Nombre")
         self.tree_productos.heading("Precio Venta", text="Precio Venta")
         self.tree_productos.heading("Cantidad", text="Cantidad")
@@ -49,7 +77,7 @@ class SupermercadoApp:
         productos = ProductosController()
         obtener_productos = productos.obtener()
         for item in obtener_productos:
-              self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
+              self.tree_productos.insert("", "end", values=(item[0], item[1], item[4], item[2], item[3]))
     def agregar_producto(self):
         producto = {
             "nombreProducto": self.nombre_var.get(),
@@ -57,28 +85,32 @@ class SupermercadoApp:
             "precioCompra": self.precio_compra_var.get(),
             "cantidad": self.cantidad_var.get()
         }
-        ProductosController.crear_tabla()
-        result=ProductosController.insertar(producto)
+        self.productos_controller.crear_tabla()
+        result = self.productos_controller.insertar(producto)
         self.productos.append(producto)
         for item in result:
-              self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
+              self.tree_productos.insert("", "end", values=(item[0],item[1], item[4], item[2], item[3]))
         messagebox.showinfo("Éxito", "Producto agregado correctamente")
+    
+    def limpiar_treeview(self):
+        for item in self.tree_productos.get_children():
+            self.tree_productos.delete(item)
 
     def eliminar_producto(self):
-        producto = {
-            "nombreProducto": self.nombre_var.get(),
-        }
         productos = ProductosController()
         selected_item = self.tree_productos.selection()
-        id_producto = self.tree_productos.item(selected_item[0])['values']
-        productos.eliminar(id_producto)
-        productos =productos.obtener()
-        self.productos.append(producto)
         
-        for item in productos:
-              self.tree_productos.insert("", "end", values=(item[1], item[4], item[2], item[3]))
-        
-        messagebox.showinfo("Éxito", "Producto eliminado correctamente")
+        if len(selected_item) == 0:
+            messagebox.showinfo("Info", "Debe seleeccionar un producto")
+        else:
+            id_producto = self.tree_productos.item(selected_item[0])['values']
+            productos.eliminar(id_producto[0])
+            self.limpiar_treeview()
+            productos =productos.obtener()
+            for item in productos:
+                self.tree_productos.insert("", "end", values=(item[0], item[1], item[4], item[2], item[3]))
+            
+            messagebox.showinfo("Éxito", "Producto eliminado correctamente")
     
     def crear_vista_ventas(self):
         frame_ventas = ttk.Frame(self.notebook)
@@ -152,6 +184,8 @@ class SupermercadoApp:
         self.carrito = []
         self.tree_carrito.delete(*self.tree_carrito.get_children())
         self.actualizar_historial()
+        
+   
 
 # if __name__ == "__main__":
 #     root = tk.Tk()
