@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from controller.producto_controller import ProductosController
+from controller.historico_venta_controller import HistoricoController
 class SupermercadoApp:
     def __init__(self, root):
         self.root = root
@@ -18,6 +19,7 @@ class SupermercadoApp:
         self.crear_vista_ventas()
         self.crear_vista_historial()
         self.productos_controller = ProductosController()
+        self.historico_controller = HistoricoController()
     
     def crear_vista_productos(self):
         frame_productos = ttk.Frame(self.notebook)
@@ -127,7 +129,8 @@ class SupermercadoApp:
         ttk.Button(frame_ventas, text="Agregar al Carrito", command=self.agregar_al_carrito).grid(row=2, column=0, columnspan=2)
         ttk.Button(frame_ventas, text="Vender", command=self.realizar_venta).grid(row=3, column=0, columnspan=2)
         
-        self.tree_carrito = ttk.Treeview(frame_ventas, columns=("Nombre", "Cantidad", "Subtotal"), show='headings')
+        self.tree_carrito = ttk.Treeview(frame_ventas, columns=("Idproducto","Nombre", "Cantidad", "Subtotal"), show='headings')
+        self.tree_carrito.heading("Idproducto", text="Id")
         self.tree_carrito.heading("Nombre", text="Nombre")
         self.tree_carrito.heading("Cantidad", text="Cantidad")
         self.tree_carrito.heading("Subtotal", text="Subtotal")
@@ -136,13 +139,13 @@ class SupermercadoApp:
     def agregar_al_carrito(self):
         nombre_producto = self.buscar_var.get()
         cantidad = self.cantidad_vender_var.get()
-        
-        for producto in self.productos:
-            if producto["nombre"] == nombre_producto and producto["cantidad"] >= cantidad:
-                subtotal = producto["precio_venta"] * cantidad
-                self.carrito.append({"nombre": nombre_producto, "cantidad": cantidad, "subtotal": subtotal})
-                self.tree_carrito.insert("", "end", values=(nombre_producto, cantidad, subtotal))
-                producto["cantidad"] -= cantidad
+        producto = self.productos_controller.obtener_productos_nombre(nombre_producto)
+        for item in producto:
+            if item[1] == nombre_producto and item[2] >= cantidad:
+                subtotal = item[3] * cantidad
+                self.carrito.append({"Idproducto": item[0],"NombreProducto": nombre_producto, "CantidadProducto": cantidad, "subtotal": subtotal})
+                self.tree_carrito.insert("", "end", values=(item[0],nombre_producto, cantidad, subtotal))
+                item[2] -= cantidad
                 return
         
         messagebox.showerror("Error", "Producto no disponible o cantidad insuficiente")
@@ -157,37 +160,36 @@ class SupermercadoApp:
         self.tree_historial.heading("Ganancias", text="Ganancias")
         self.tree_historial.pack(fill='both', expand=True)
         
-        self.actualizar_historial()
+        self.actualizar_historial(self)
     
-    def actualizar_historial(self):
+    def actualizar_historial(self, total_venta):
         for row in self.tree_historial.get_children():
             self.tree_historial.delete(row)
         
         for venta in self.historial:
-            items = ", ".join([f"{item['nombre']} x{item['cantidad']}" for item in venta["items"]])
+            items = ", ".join([f"{item['NombreProducto']} x{item['CantidadProducto']}" for item in venta["items"]])
             total = venta["total"]
-            ganancias = sum([(item['subtotal'] - next(p['precio_compra'] * item['cantidad'] for p in self.productos if p['nombre'] == item['nombre'])) for item in venta["items"]])
+            ganancias = sum([(item['subtotal'] - next(p['PrecioCompra'] * item['CantidadProducto'] for p in self.productos if p['NombreProducto'] == item['NombreProducto'])) for item in venta["items"]])
             self.tree_historial.insert("", "end", values=(items, total, ganancias))
-    
+
+        self.historico_controller.insertar(self.carrito,total_venta, ganancias)
     def realizar_venta(self):
         if not self.carrito:
             messagebox.showerror("Error", "No hay productos en el carrito para vender")
             return
         
         total_venta = sum(item['subtotal'] for item in self.carrito)
-        detalle_venta = "\n".join([f"{item['nombre']} x{item['cantidad']} - ${item['subtotal']:.2f}" for item in self.carrito])
+        detalle_venta = "\n".join([f"{ item['Idproducto']} - {item['NombreProducto']} {item['CantidadProducto']} - ${item['subtotal']:.2f}" for item in self.carrito])
         
         factura = f"Factura:\n{detalle_venta}\n\nTotal: ${total_venta:.2f}"
         messagebox.showinfo("Venta Realizada", factura)
-        
-        self.historial.append({"items": self.carrito, "total": total_venta})
+        self.productos_controller.actualizar_producto(self.carrito)
+        self.historico_controller.crear_tabla()
+        self.historial.append({"items": self.carrito, "total": total_venta })
         self.carrito = []
         self.tree_carrito.delete(*self.tree_carrito.get_children())
-        self.actualizar_historial()
-        
+        self.actualizar_historial(total_venta)
+    
    
 
-# if __name__ == "__main__":
-#     root = tk.Tk()
-#     app = SupermercadoApp(root)
-#     root.mainloop()
+
