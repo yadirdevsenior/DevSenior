@@ -1,10 +1,11 @@
 from .conexion_db import ConexionDB
+import uuid
 
 class historicoModel:
-    def __init__(self, CantidadItem, Total, Ganancias):
-      self.CantidadItem = CantidadItem
-      self.Total = Total
-      self.Ganancias = Ganancias
+    def __init__(self, cantidad_item, total, ganancias):
+      self.cantidad_item = cantidad_item
+      self.total = total
+      self.ganancias = ganancias
       
       
     
@@ -12,7 +13,8 @@ class historicoModel:
         conexion = ConexionDB()
         
         sql = '''
-                CREATE TABLE HistoricoVentas
+                CREATE TABLE IF NOT EXISTS HistoricoVentas
+                
                 (
                     IdHistorico INTEGER,
                     CantidadItem INTEGER,
@@ -33,13 +35,16 @@ class historicoModel:
     def insertar_historico_ventas(self): 
         conexion = ConexionDB()
         sql = '''
-                INSERT INTO HistoricoVentas (CantidadItem, Total, Ganancias)
-                VALUES(?,?,?)
+                INSERT INTO HistoricoVentas (CantidadItem, Total, Ganancias, NoFactura)
+                VALUES(?,?,?,?)
             '''
-        conexion.cursor.execute(sql, ( self.CantidadItem, self.Total, self.Ganancias))
+        numero_factura = str(uuid.uuid4())
+        conexion.cursor.execute(sql, ( self.cantidad_item, self.total, self.ganancias, numero_factura))
+        conexion.conexion.commit()
         sql2 = '''SELECT CantidadItem, 
                         Total , 
-                        Ganancias
+                        Ganancias,
+                        NoFactura
                   FROM HistoricoVentas'''
         response = conexion.cursor.execute(sql2)
         result = response.fetchall()

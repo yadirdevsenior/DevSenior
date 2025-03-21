@@ -6,7 +6,8 @@ class HistoricoController:
         self.productos = historicoModel('','','')
     def crear_tabla(self):
         self.productos.crear_tabla()
-    def insertar(self, data): 
-        historico= historicoModel(data.get("CantidadItem"), data.get("Total"), data.get(" Ganancias")) 
+    def insertar(self,items, total, ganancias):
+        cantidad_item = items
+        historico= historicoModel(cantidad_item, total, ganancias) 
         return historico.insertar_historico_ventas()
     

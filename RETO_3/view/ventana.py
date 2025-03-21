@@ -79,7 +79,7 @@ class SupermercadoApp:
         productos = ProductosController()
         obtener_productos = productos.obtener()
         for item in obtener_productos:
-              self.tree_productos.insert("", "end", values=(item[0], item[1], item[4], item[2], item[3]))
+              self.tree_productos.insert("", "end", values=(item[0], item[1], item[3], item[2], item[3]))
     def agregar_producto(self):
         producto = {
             "nombreProducto": self.nombre_var.get(),
@@ -91,7 +91,7 @@ class SupermercadoApp:
         result = self.productos_controller.insertar(producto)
         self.productos.append(producto)
         for item in result:
-              self.tree_productos.insert("", "end", values=(item[0],item[1], item[4], item[2], item[3]))
+              self.tree_productos.insert("", "end", values=(item[0],item[1], item[3], item[2], item[4]))
         messagebox.showinfo("Éxito", "Producto agregado correctamente")
     
     def limpiar_treeview(self):
@@ -143,9 +143,9 @@ class SupermercadoApp:
         for item in producto:
             if item[1] == nombre_producto and item[2] >= cantidad:
                 subtotal = item[3] * cantidad
-                self.carrito.append({"Idproducto": item[0],"NombreProducto": nombre_producto, "CantidadProducto": cantidad, "subtotal": subtotal})
-                self.tree_carrito.insert("", "end", values=(item[0],nombre_producto, cantidad, subtotal))
-                item[2] -= cantidad
+                self.carrito.append({"Idproducto": item[0],"NombreProducto": nombre_producto, "CantidadProducto": cantidad, "subtotal": subtotal,"PrecioCompra": item[4]})
+                self.tree_carrito.insert("", "end", values=(item[0],nombre_producto, cantidad, subtotal,item[3]))
+                
                 return
         
         messagebox.showerror("Error", "Producto no disponible o cantidad insuficiente")
@@ -159,8 +159,12 @@ class SupermercadoApp:
         self.tree_historial.heading("Total", text="Total")
         self.tree_historial.heading("Ganancias", text="Ganancias")
         self.tree_historial.pack(fill='both', expand=True)
-        
-        self.actualizar_historial(self)
+        try:
+            self.actualizar_historial(self)
+        except Exception as e:
+            print(e)
+
+     
     
     def actualizar_historial(self, total_venta):
         for row in self.tree_historial.get_children():
@@ -169,10 +173,10 @@ class SupermercadoApp:
         for venta in self.historial:
             items = ", ".join([f"{item['NombreProducto']} x{item['CantidadProducto']}" for item in venta["items"]])
             total = venta["total"]
-            ganancias = sum([(item['subtotal'] - next(p['PrecioCompra'] * item['CantidadProducto'] for p in self.productos if p['NombreProducto'] == item['NombreProducto'])) for item in venta["items"]])
+            ganancias = sum([(item['subtotal'] - next(p['PrecioCompra'] * item['CantidadProducto'] for p in self.carrito if p['NombreProducto'] == item['NombreProducto'])) for item in venta["items"]])
             self.tree_historial.insert("", "end", values=(items, total, ganancias))
 
-        self.historico_controller.insertar(self.carrito,total_venta, ganancias)
+            self.historico_controller.insertar(items, total, ganancias)
     def realizar_venta(self):
         if not self.carrito:
             messagebox.showerror("Error", "No hay productos en el carrito para vender")
@@ -186,9 +190,9 @@ class SupermercadoApp:
         self.productos_controller.actualizar_producto(self.carrito)
         self.historico_controller.crear_tabla()
         self.historial.append({"items": self.carrito, "total": total_venta })
+        self.actualizar_historial(total_venta)
         self.carrito = []
         self.tree_carrito.delete(*self.tree_carrito.get_children())
-        self.actualizar_historial(total_venta)
     
    
 
