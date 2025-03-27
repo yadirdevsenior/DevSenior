@@ -72,4 +72,44 @@ class ProductoModel:
         conexion.conexion.commit()
         conexion.cerrar_conexion()
         
+    def obtener_productos_nombre_db(self, nombre_producto):
+   
+        conexion = ConexionDB()
+       
+        sql2 = '''SELECT Idproducto,
+                         NombreProducto,
+                         CantidadProducto,
+                         PrecioVenta,
+                         PrecioCompra 
+                  FROM Productos where NombreProducto = ?'''
+        
+        response = conexion.cursor.execute(sql2, (nombre_producto,))
+        result = response.fetchall()
+        conexion.cerrar_conexion()
+        return result
     
+    def actualizar_producto_db(self,cantidad, id_producto):
+   
+        conexion = ConexionDB()
+       
+        sql2 = '''UPDATE Productos SET CantidadProducto = ? WHERE IdProducto = ?'''
+        
+        response = conexion.cursor.execute(sql2, (cantidad, id_producto,))
+        conexion.conexion.commit()
+        conexion.cerrar_conexion()
+
+    def obtener_productos_id_db(self, id_producto):
+   
+        conexion = ConexionDB()
+       
+        sql2 = '''SELECT Idproducto,
+                         NombreProducto,
+                         CantidadProducto,
+                         PrecioVenta,
+                         PrecioCompra 
+                  FROM Productos where Idproducto = ?'''
+        
+        response = conexion.cursor.execute(sql2, (id_producto,))
+        result = response.fetchall()
+        conexion.cerrar_conexion()
+        return result   

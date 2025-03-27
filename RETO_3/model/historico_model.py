@@ -1,8 +1,9 @@
 from .conexion_db import ConexionDB
+import uuid
 
 class historicoModel:
-    def __init__(self, IdProducto, total, ganancias):
-      self.IdProducto = IdProducto
+    def __init__(self, cantidad_item, total, ganancias):
+      self.cantidad_item = cantidad_item
       self.total = total
       self.ganancias = ganancias
       
@@ -12,15 +13,15 @@ class historicoModel:
         conexion = ConexionDB()
         
         sql = '''
-                CREATE TABLE HistoricoVentas
+                CREATE TABLE IF NOT EXISTS HistoricoVentas
+                
                 (
                     IdHistorico INTEGER,
-                    IdProducto INTEGER,
-                    total DECIMAL(18,2),
-                    ganancias DECIMAL(18,2),
+                    CantidadItem INTEGER,
+                    Total DECIMAL(18,2),
+                    Ganancias DECIMAL(18,2),
                     NoFactura TEXT UNIQUE NOT NULL,
-                    PRIMARY KEY(IdHistorico AUTOINCREMENT),
-                   FOREIGN KEY(IdProducto) REFERENCES Productos(IdProducto)
+                    PRIMARY KEY(IdHistorico AUTOINCREMENT)
                 )
             '''
         conexion.cursor.execute(sql)
@@ -31,3 +32,22 @@ class historicoModel:
             print(item)
         conexion.cerrar_conexion()
         
+    def insertar_historico_ventas(self): 
+        conexion = ConexionDB()
+        sql = '''
+                INSERT INTO HistoricoVentas (CantidadItem, Total, Ganancias, NoFactura)
+                VALUES(?,?,?,?)
+            '''
+        numero_factura = str(uuid.uuid4())
+        conexion.cursor.execute(sql, ( self.cantidad_item, self.total, self.ganancias, numero_factura))
+        conexion.conexion.commit()
+        sql2 = '''SELECT CantidadItem, 
+                        Total , 
+                        Ganancias,
+                        NoFactura
+                  FROM HistoricoVentas'''
+        response = conexion.cursor.execute(sql2)
+        result = response.fetchall()
+        conexion.cerrar_conexion()
+        return result
+    
