@@ -19,8 +19,6 @@ class ProductosController:
     def obtener_productos_nombre(self, nombre_producto):
         return self.productos.obtener_productos_nombre_db(nombre_producto)
     
-        factura = f"Factura:\n{detalle_venta}\n\nTotal: ${total_venta:.2f}"
-        factura = f"Factura:\n{detalle_venta}\n\nTotal: ${total_venta:.2f}"
     def actualizar_producto(self, detalle_venta):
         for item in detalle_venta:
             datos_actual = self.productos.obtener_productos_id_db(item["Idproducto"])
