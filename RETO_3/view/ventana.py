@@ -87,9 +87,11 @@ class SupermercadoApp:
             "precioCompra": self.precio_compra_var.get(),
             "cantidad": self.cantidad_var.get()
         }
+        self.limpiar_treeview()
         self.productos_controller.crear_tabla()
         result = self.productos_controller.insertar(producto)
         self.productos.append(producto)
+
         for item in result:
               self.tree_productos.insert("", "end", values=(item[0],item[1], item[3], item[2], item[4]))
         messagebox.showinfo("Éxito", "Producto agregado correctamente")
