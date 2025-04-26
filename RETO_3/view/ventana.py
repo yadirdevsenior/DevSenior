@@ -163,6 +163,7 @@ class SupermercadoApp:
         self.tree_historial.pack(fill='both', expand=True)
         try:
             self.actualizar_historial(self)
+            #comentario de prueba
         except Exception as e:
             print(e)
 
