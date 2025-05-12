@@ -1,15 +1,19 @@
-from conexion_db import AcademiaDB
+from model.database.conexion_db import ConexionDB
+from model.entidades.matricula import Matricula
 
 class MatriculaModel:
-    def __init__(self):
-        self.db = AcademiaDB()
-        self.connection = self.db.get_connection()
+    def __init__(self, matricula = Matricula):
+        self.db = ConexionDB()
+        self.connection = self.db.get_conexion()
+        self.matricula = matricula
     
-    def matricular_estudiante(self, id_estudiante, id_curso):
+    def matricular_estudiante(self):
         query = "INSERT INTO matriculas (id_estudiante, id_curso, fecha_matricula) VALUES (%s, %s, CURDATE())"
         cursor = self.connection.cursor()
         try:
-            cursor.execute(query, (id_estudiante, id_curso))
+            cursor.execute(query, (self.matricula.id_estudiante,
+                                   self.matricula.id_curso
+                                   ))
             self.connection.commit()
             return cursor.lastrowid
         except Exception as e:

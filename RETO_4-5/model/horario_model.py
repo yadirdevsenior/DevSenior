@@ -1,15 +1,20 @@
-from conexion_db import AcademiaDB
+from model.database.conexion_db import ConexionDB
+from model.entidades.horario import Horario
 
 class HorarioModel:
-    def __init__(self):
-        self.db = AcademiaDB()
-        self.connection = self.db.get_connection()
+    def __init__(self, horario = Horario):
+        self.db = ConexionDB()
+        self.connection = self.db.get_conexion()
+        self.horario = horario
     
-    def agregar_horario(self, id_curso, dia_semana, hora_inicio, hora_fin):
+    def agregar_horario(self):
         query = "INSERT INTO horarios (id_curso, dia_semana, hora_inicio, hora_fin) VALUES (%s, %s, %s, %s)"
         cursor = self.connection.cursor()
         try:
-            cursor.execute(query, (id_curso, dia_semana, hora_inicio, hora_fin))
+            cursor.execute(query, (self.horario.id_curso,
+                                   self.horario.dia_semana,
+                                   self.horario.hora_inicio,
+                                   self.horario.hora_fin))
             self.connection.commit()
             return cursor.lastrowid
         except Exception as e:

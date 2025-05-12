@@ -2,36 +2,6 @@ from models.profesor_model import ProfesorModel
 from views.profesor_view import ProfesorView
 
 class ProfesorController:
-    def __init__(self):
-        self.model = ProfesorModel()
-        self.view = ProfesorView()
-    
-    def menu_profesores(self):
-        while True:
-            print("\n--- GESTIÓN DE PROFESORES ---")
-            print("1. Registrar nuevo profesor")
-            print("2. Listar todos los profesores")
-            print("3. Buscar profesor por ID")
-            print("4. Actualizar profesor")
-            print("5. Eliminar profesor")
-            print("0. Volver al menú principal")
-            
-            opcion = input("Seleccione una opción: ")
-            
-            if opcion == "1":
-                self.registrar_profesor()
-            elif opcion == "2":
-                self.listar_profesores()
-            elif opcion == "3":
-                self.buscar_profesor()
-            elif opcion == "4":
-                self.actualizar_profesor()
-            elif opcion == "5":
-                self.eliminar_profesor()
-            elif opcion == "0":
-                break
-            else:
-                print("Opción no válida")
     
     def registrar_profesor(self):
         nombre, apellido, email, telefono, especialidad = self.view.obtener_datos_profesor()

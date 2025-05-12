@@ -6,3 +6,7 @@ RETO_3/view/__pycache__/ventana.cpython-311.pyc
 RETO_3/view/__pycache__/ventana.cpython-313.pyc
 RETO_3/controller/__pycache__/historico_venta_controller.cpython-313.pyc
 RETO_3/model/__pycache__/historico_model.cpython-313.pyc
+RETO_4-5/controller/__pycache__/estudiante_controller.cpython-311.pyc
+RETO_4-5/model/__pycache__/estudiante_model.cpython-311.pyc
+RETO_4-5/model/database/__pycache__/conexion_db.cpython-311.pyc
+RETO_4-5/model/entidades/__pycache__/estudiante.cpython-311.pyc

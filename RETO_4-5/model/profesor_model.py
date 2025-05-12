@@ -1,15 +1,20 @@
-from conexion_db import AcademiaDB
+from model.database.conexion_db import ConexionDB
+from model.entidades.profesor import Profesor
 
 class ProfesorModel:
-    def __init__(self):
-        self.db = AcademiaDB()
-        self.connection = self.db.get_connection()
+    def __init__(self, profesor = Profesor):
+        self.db = ConexionDB()
+        self.profesor = profesor
+        self.connection = self.db.get_conexion()
     
-    def crear_profesor(self, nombre, apellido, email, telefono=None, especialidad=None):
-        query = "INSERT INTO profesores (nombre, apellido, email, telefono, especialidad) VALUES (%s, %s, %s, %s, %s)"
+    def crear_profesor(self):
+        query = "INSERT INTO profesores (nombre, correo, especialidad) VALUES (%s, %s, %s)"
         cursor = self.connection.cursor()
         try:
-            cursor.execute(query, (nombre, apellido, email, telefono, especialidad))
+            cursor.execute(query, (self.profesor.nombre, 
+                                   self.profesor.correo,
+                                   self.profesor.especialidad
+                                   ))
             self.connection.commit()
             return cursor.lastrowid
         except Exception as e:
