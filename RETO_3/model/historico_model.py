@@ -4,8 +4,9 @@ import uuid
 class historicoModel:
     def __init__(self, cantidad_item, total, ganancias):
       self.cantidad_item = cantidad_item
-      self.total = total
+       self.total = total
       self.ganancias = ganancias
+
       
       
     
