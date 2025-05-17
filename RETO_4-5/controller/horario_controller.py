@@ -2,36 +2,6 @@ from models.horario_model import HorarioModel
 from views.horario_view import HorarioView
 
 class HorarioController:
-    def __init__(self):
-        self.model = HorarioModel()
-        self.view = HorarioView()
-    
-    def menu_horarios(self):
-        while True:
-            print("\n--- GESTIÓN DE HORARIOS ---")
-            print("1. Agregar horario a curso")
-            print("2. Ver horarios de un curso")
-            print("3. Ver horarios por día")
-            print("4. Actualizar horario")
-            print("5. Eliminar horario")
-            print("0. Volver al menú principal")
-            
-            opcion = input("Seleccione una opción: ")
-            
-            if opcion == "1":
-                self.agregar_horario()
-            elif opcion == "2":
-                self.ver_horarios_curso()
-            elif opcion == "3":
-                self.ver_horarios_dia()
-            elif opcion == "4":
-                self.actualizar_horario()
-            elif opcion == "5":
-                self.eliminar_horario()
-            elif opcion == "0":
-                break
-            else:
-                print("Opción no válida")
     
     def agregar_horario(self):
         id_curso, dia_semana, hora_inicio, hora_fin = self.view.obtener_datos_horario()
