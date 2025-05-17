@@ -1,6 +1,6 @@
 from model.producto_model import ProductoModel
 
-class ProductosController: 
+class ProductosController:
     def __init__(self):
          self.productos = ProductoModel('','','','')
     def crear_tabla(self):
